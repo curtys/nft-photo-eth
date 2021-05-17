@@ -1,0 +1,12 @@
+version: "3"
+
+networks:
+  default:
+    external: false
+
+services:
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - '8545:8545'
+    command: ganache-cli -s nft
