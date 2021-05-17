@@ -15,17 +15,26 @@ contract PhotoOwnership is ERC721URIStorage {
     constructor() ERC721("PhotoOwnershipToken", "POT") {
     }
 
-    function mintPOT(string memory tokenURI) public returns (uint256) {
+    function mintPOT(string memory photoHash, uint256 initialPrice, uint256 initialSupply) public returns (uint256) {
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
         _safeMint(msg.sender, newItemId);
-        _setTokenURI(newItemId, tokenURI);
+        _setTokenURI(newItemId, photoHash);
 
-        PhotoLicensing licensing = new PhotoLicensing(newItemId);
+        PhotoLicensing licensing = new PhotoLicensing(msg.sender, newItemId, initialPrice, initialSupply);
         _licensingContracts[newItemId] = licensing;
 
         return newItemId;
+    }
+
+    function getPLTPrice(uint256 tokenId) public view returns (uint256) {
+        return _licensingContracts[tokenId].price();
+    }
+
+    function setPLTPrice(uint256 tokenId, uint price) public {
+        require(_isApprovedOrOwner(msg.sender, tokenId));
+        _licensingContracts[tokenId].setPrice(price);
     }
 
     function mintPLT(uint256 tokenId, uint256 amount)
@@ -58,9 +67,12 @@ contract PhotoOwnership is ERC721URIStorage {
 contract PhotoLicensing is ERC20PresetMinterPauser {
 
     uint256 private _associatedTokenId;
+    uint256 private _price;
 
-    constructor(uint256 assocTokenId) ERC20PresetMinterPauser("PhotoLicensing", "PLT") {
+    constructor(address emitter, uint256 assocTokenId, uint256 initialPrice, uint256 initialSupply) ERC20PresetMinterPauser("PhotoLicensing", "PLT") {
         _associatedTokenId = assocTokenId;
+        _price = initialPrice;
+        mint(emitter, initialSupply);
     }
 
     function transferPLT(address owner, address recipient, uint256 amount) external {
@@ -71,8 +83,12 @@ contract PhotoLicensing is ERC20PresetMinterPauser {
         return 0;
     }
 
-    function price() public view virtual returns (uint8) {
-        return 1;
+    function price() public view virtual returns (uint256) {
+        return _price;
+    }
+
+    function setPrice(uint newPrice) external {
+        _price = newPrice;
     }
 
     function associatedTokenId() external view returns (uint256) {

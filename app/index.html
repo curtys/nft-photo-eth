@@ -14,9 +14,19 @@
       <form id="form-createToken">
         <fieldset>
           <div class="mb-3">
-            <label for="tokenURI" class="form-label">Photo URI</label>
-            <input type="text" class="form-control" id="tokenURI" aria-describedby="uriHelp">
-            <div id="uriHelp" class="form-text">URI where your photo is located.</div>
+            <label for="tokenPhotoHash" class="form-label">Photo Hash</label>
+            <input type="text" class="form-control" id="tokenPhotoHash" aria-describedby="tokenPhotoHash">
+            <div id="tokenPhotoHashHelp" class="form-text">Hash value of your photo.</div>
+          </div>
+          <div class="mb-3">
+            <label for="tokenInitialPrice" class="form-label">License Price</label>
+            <input type="number" class="form-control" id="tokenInitialPrice" aria-describedby="tokenInitialPriceHelp">
+            <div id="tokenInitialPriceHelp" class="form-text">Initial price of a license token for your photo in Ether.</div>
+          </div>
+          <div class="mb-3">
+            <label for="tokenInitialSupply" class="form-label">License Supply</label>
+            <input type="number" class="form-control" id="tokenInitialSupply" aria-describedby="tokenInitialSupplyHelp">
+            <div id="tokenInitialSupplyHelp" class="form-text">Initial supply of license tokens for your photo.</div>
           </div>
           <button type="submit" class="btn btn-primary">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
@@ -41,6 +51,30 @@
             <label for="licNum" class="form-label">Amount</label>
             <input type="text" class="form-control" id="licNum" aria-describedby="licNumHelp">
             <div id="licNumHelp" class="form-text">Number of licenses to emit</div>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+              style="display: none;"></span>
+            <span class="label">Submit</span>
+          </button>
+        </fieldset>
+        <div class="alert alert-primary" role="alert" style="display: none;">
+        </div>
+      </form>
+    </div>
+    <div>
+      <h2>Change price of license tokens</h2>
+      <form id="form-chgPrice">
+        <fieldset>
+          <div class="mb-3">
+            <label for="chgPriceTokenId" class="form-label">POT ID</label>
+            <input type="text" class="form-control" id="chgPriceTokenId" aria-describedby="chgPriceTokenIdHelp">
+            <div id="chgPriceTokenIdHelp" class="form-text">ID of your ownership token</div>
+          </div>
+          <div class="mb-3">
+            <label for="chgPriceNew" class="form-label">New Price</label>
+            <input type="number" class="form-control" id="chgPriceNew" aria-describedby="chgPriceNew">
+            <div id="chgPriceNewHelp" class="form-text">New price of a license in Ether.</div>
           </div>
           <button type="submit" class="btn btn-primary">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
@@ -79,6 +113,25 @@
             <label for="supplyTokenId" class="form-label">POT ID</label>
             <input type="text" class="form-control" id="supplyTokenId" aria-describedby="supplyTokenIdHelp">
             <div id="supplyTokenIdHelp" class="form-text">ID of the token to fetch the total amount of emitted PLT from.</div>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+              style="display: none;"></span>
+            <span class="label">Fetch</span>
+          </button>
+        </fieldset>
+        <div class="alert alert-primary" role="alert" style="display: none;">
+        </div>
+      </form>
+    </div>
+    <div>
+      <h2>Get price</h2>
+      <form id="form-price">
+        <fieldset>
+          <div class="mb-3">
+            <label for="priceTokenId" class="form-label">POT ID</label>
+            <input type="text" class="form-control" id="priceTokenId" aria-describedby="priceTokenIdHelp">
+            <div id="priceTokenIdHelp" class="form-text">ID of the token to fetch the price of PLT from.</div>
           </div>
           <button type="submit" class="btn btn-primary">
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"

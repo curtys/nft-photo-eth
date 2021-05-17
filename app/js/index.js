@@ -43,10 +43,13 @@ async function startApp() {
 async function attachUI() {
 
   let extractor = (form) => {
-    return form.querySelector('#tokenURI').value;
+    let tokenHash = form.querySelector('#tokenPhotoHash').value;
+    let tokenPrice = form.querySelector('#tokenInitialPrice').value;
+    let tokenSupply = form.querySelector('#tokenInitialSupply').value;
+    return [tokenHash, tokenPrice, tokenSupply];
   };
-  let action = (value) => {
-    return createToken(value).then(result => {
+  let action = (args) => {
+    return createToken(args[0], args[1], args[2]).then(result => {
       return `Successfully minted POT with ID ${result}.`;
     })
   }
@@ -63,6 +66,18 @@ async function attachUI() {
     })
   }
   buildForm('form-mintLicenses', extractor, action);
+
+  extractor = (form) => {
+    let tokenId = form.querySelector('#chgPriceTokenId').value;
+    let number = form.querySelector('#chgPriceNew').value;
+    return [tokenId, number];
+  };
+  action = (args) => {
+    return changePrice(args[0], args[1]).then(result => {
+      return `Successfully changed the price of PLT for token ${args[0]} to ${args[1]} Ether.`;
+    })
+  }
+  buildForm('form-chgPrice', extractor, action);
 
   extractor = (form) => {
     let tokenId = form.querySelector('#buyTokenId').value;
@@ -85,6 +100,17 @@ async function attachUI() {
     })
   }
   buildForm('form-supply', extractor, action);
+
+  extractor = (form) => {
+    let tokenId = form.querySelector('#priceTokenId').value;
+    return tokenId;
+  };
+  action = (tokenId) => {
+    return fetchPrice(tokenId).then(result => {
+      return `The price of PLT for POT ${tokenId} is ${result} Ether.`;
+    })
+  }
+  buildForm('form-price', extractor, action);
 
   extractor = (form) => {
     let tokenId = form.querySelector('#balanceTokenId').value;
@@ -169,11 +195,12 @@ async function connect() {
   }
 }
 
-async function createToken(tokenURI) {
+async function createToken(tokenHash, initialPrice, initialSupply) {
   await connect();
-  console.log(tokenURI);
+  console.log(tokenHash);
   console.log(app.currentAccount);
-  const result = await PhotoOwnership.methods.mintPOT(tokenURI).send({ from: app.currentAccount, gas: 2100000 });
+  const result = await PhotoOwnership.methods.mintPOT(tokenHash, initialPrice, initialSupply)
+    .send({ from: app.currentAccount, gas: 2100000 });
   console.log(result);
   const tokenId = result.events.Transfer.returnValues.tokenId;
   return tokenId;
@@ -189,8 +216,9 @@ async function mintLicenses(tokenId, num) {
 async function buyLicense(tokenId) {
   await connect();
   try {
+    const price = await fetchPrice(tokenId);
     const result = await PhotoOwnership.methods.obtainLicense(tokenId)
-      .send({ from: app.currentAccount, gas: 2100000, value: Web3.utils.toWei('1')});
+      .send({ from: app.currentAccount, gas: 2100000, value: Web3.utils.toWei(`${price}`)});
     return Promise.resolve(result.status);
   } catch (err) {
     console.error(err);
@@ -218,6 +246,32 @@ async function fetchBalance(tokenId) {
       .call({ from: app.currentAccount});
     console.log(result)
     return Promise.resolve(result);
+  } catch (err) {
+    console.error(err);
+    return Promise.reject(err);
+  }
+}
+
+async function fetchPrice(tokenId) {
+  await connect();
+  try {
+    const result = await PhotoOwnership.methods.getPLTPrice(tokenId)
+      .call({ from: app.currentAccount});
+    console.log(result)
+    return Promise.resolve(result);
+  } catch (err) {
+    console.error(err);
+    return Promise.reject(err);
+  }
+}
+
+async function changePrice(tokenId, newPrice) {
+  await connect();
+  try {
+    const result = await PhotoOwnership.methods.setPLTPrice(tokenId, newPrice)
+      .send({ from: app.currentAccount, gas: 2100000});
+    console.log(result)
+    return Promise.resolve(result.status);
   } catch (err) {
     console.error(err);
     return Promise.reject(err);

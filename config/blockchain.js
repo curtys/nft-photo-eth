@@ -17,10 +17,7 @@ module.exports = {
     },
     accounts: [
       {
-        nodeAccounts: true,
-      },
-      {
-        mnemonic: "torch entire dumb turn hospital emotion olive bottom dutch film digital give",
+        mnemonic: "energy dish siege couple clay secret early glow derive desk siren result",
         addressIndex: "0",
         numAddresses: "10",
       }
